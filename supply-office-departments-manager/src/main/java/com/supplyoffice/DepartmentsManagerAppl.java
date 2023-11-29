@@ -1,0 +1,11 @@
+package com.supplyoffice;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class DepartmentsManagerAppl {
+    public static void main(String[] args) {
+        SpringApplication.run(DepartmentsManagerAppl.class, args);
+    }
+}
