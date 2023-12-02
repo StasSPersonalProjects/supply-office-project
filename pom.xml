@@ -17,6 +17,8 @@
     <modules>
         <module>supply-office-departments-manager</module>
         <module>supply-office-departments-deadlines</module>
+        <module>supply-office-request-receiver</module>
+        <module>supply-office-request-processor</module>
     </modules>
     <properties>
 		<java.version>17</java.version>

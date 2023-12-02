@@ -38,7 +38,7 @@ public class DepartmentsManagerServiceImpl implements DepartmentsManagerService 
     public String addDepartment(DepartmentRequestDTO departmentDTO) {
         LOG.debug("The request for adding new department is processed inside the service class.");
         String result;
-        if (departmentsRepository.findByName(departmentDTO.getName()) != null) {
+        if (existsByName(departmentDTO.getName())) {
             result = "The department already exists.";
             LOG.debug(result);
             return result;
@@ -54,6 +54,10 @@ public class DepartmentsManagerServiceImpl implements DepartmentsManagerService 
         LOG.debug(result);
         LOG.debug("Created new department in 'deadlines' DB, current deadline is NULL.");
         return result;
+    }
+
+    private boolean existsByName(String name) {
+        return departmentsRepository.existsByName(name) > 0;
     }
 
     @Override
