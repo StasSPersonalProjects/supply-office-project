@@ -16,6 +16,8 @@ public class DepartmentDeadline {
     private String departmentName;
     @Column(name = "deadline")
     private LocalDateTime deadline;
+    @Column(name = "active")
+    private boolean active;
 
     public DepartmentDeadline(String departmentName) {
         this.departmentName = departmentName;
@@ -42,5 +44,13 @@ public class DepartmentDeadline {
 
     public void setDeadline(LocalDateTime deadline) {
         this.deadline = deadline;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

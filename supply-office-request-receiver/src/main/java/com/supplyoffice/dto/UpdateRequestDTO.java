@@ -2,12 +2,15 @@ package com.supplyoffice.dto;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 import java.time.LocalDateTime;
 
-public class RequestDTO {
+public class UpdateRequestDTO {
 
+    @NotNull(message = "Department ID must not be null.")
+    private long id;
     @NotBlank(message = "Department name field cannot be blank.")
     private String departmentName;
     @NotBlank(message = "Item field cannot be blank.")
@@ -19,7 +22,8 @@ public class RequestDTO {
     private String comments;
     private LocalDateTime deadline;
 
-    public RequestDTO(String departmentName, String item, int quantity, String measureUnit, String comments, LocalDateTime deadline) {
+    public UpdateRequestDTO(long id, String departmentName, String item, int quantity, String measureUnit, String comments, LocalDateTime deadline) {
+        this.id = id;
         this.departmentName = departmentName;
         this.item = item;
         this.quantity = quantity;
@@ -28,7 +32,15 @@ public class RequestDTO {
         this.deadline = deadline;
     }
 
-    public RequestDTO() {
+    public UpdateRequestDTO() {
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getDepartmentName() {

@@ -1,34 +1,46 @@
-package com.supplyoffice.dto;
+package com.supplyoffice.entities;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
-public class RequestDTO {
+@Entity
+@Table(name = "supply_requests")
+public class SupplyRequest {
 
-    @NotBlank(message = "Department name field cannot be blank.")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+    @Column(name = "department_name")
     private String departmentName;
-    @NotBlank(message = "Item field cannot be blank.")
+    @Column(name = "item")
     private String item;
-    @Min(value = 1, message = "Quantity must be greater than 0.")
+    @Column(name = "quantity")
     private int quantity;
-    @Pattern(regexp = "\\b(kg|gr|units|packs)\\b", flags = Pattern.Flag.CASE_INSENSITIVE, message = "Measure unit must be kg/gr/units/packs.")
+    @Column(name = "measure_unit")
     private String measureUnit;
+    @Column(name = "comments")
     private String comments;
+    @Column(name = "deadline")
     private LocalDateTime deadline;
 
-    public RequestDTO(String departmentName, String item, int quantity, String measureUnit, String comments, LocalDateTime deadline) {
+    public SupplyRequest(String departmentName, String item, int quantity, String measureUnit, String comments) {
         this.departmentName = departmentName;
         this.item = item;
         this.quantity = quantity;
         this.measureUnit = measureUnit;
         this.comments = comments;
-        this.deadline = deadline;
     }
 
-    public RequestDTO() {
+    public SupplyRequest() {
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getDepartmentName() {

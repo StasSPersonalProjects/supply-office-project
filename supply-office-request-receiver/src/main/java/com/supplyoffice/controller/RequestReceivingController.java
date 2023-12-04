@@ -1,6 +1,7 @@
 package com.supplyoffice.controller;
 
 import com.supplyoffice.dto.RequestDTO;
+import com.supplyoffice.dto.UpdateRequestDTO;
 import com.supplyoffice.service.RequestReceivingService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -30,14 +31,17 @@ public class RequestReceivingController {
     }
 
     @PutMapping
-    ResponseEntity<String> updateRequest() {
-        // TODO
-        return null;
+    ResponseEntity<String> updateRequest(@RequestBody @Valid UpdateRequestDTO requestDTO)
+            throws MethodArgumentNotValidException {
+        LOG.debug("Received update for request with ID {}.", requestDTO.getId());
+        String response = service.updateRequest(requestDTO);
+        return ResponseEntity.ok().body(response);
     }
 
-    @DeleteMapping
-    ResponseEntity<String> deleteRequest() {
-        // TODO
-        return null;
+    @DeleteMapping(value = "/{id}")
+    ResponseEntity<String> deleteRequest(@PathVariable long id) {
+        LOG.debug("Received delete request for ID {}.", id);
+        String response = service.removeRequest(id);
+        return ResponseEntity.ok().body(response);
     }
 }
