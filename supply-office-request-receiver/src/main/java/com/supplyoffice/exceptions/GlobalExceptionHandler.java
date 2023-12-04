@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.reactive.function.client.WebClientRequestException;
 
 import java.util.stream.Collectors;
 
@@ -31,8 +30,4 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler
-    public ResponseEntity<String> handleWebClientRequestException(WebClientRequestException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.valueOf(500));
-    }
 }
