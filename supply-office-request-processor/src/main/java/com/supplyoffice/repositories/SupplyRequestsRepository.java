@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface SupplyRequestsRepository extends JpaRepository<SupplyRequest, String> {
 
-    @Query(value = "SELECT * FROM supply_requests WHERE department_name = :name;", nativeQuery = true)
-    List<SupplyRequest> findByName(String name);
+    @Query(value = "SELECT * FROM supply_requests s WHERE s.department_name = :name", nativeQuery = true)
+    List<SupplyRequest> findAllByName(String name);
 }

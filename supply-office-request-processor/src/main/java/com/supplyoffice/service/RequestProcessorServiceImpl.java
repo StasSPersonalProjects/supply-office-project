@@ -6,12 +6,15 @@ import com.supplyoffice.entities.Deadline;
 import com.supplyoffice.repositories.DeadlinesRepository;
 import com.supplyoffice.repositories.SupplyRequestsRepository;
 import jakarta.annotation.PostConstruct;
+import jakarta.mail.MessagingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -44,10 +47,11 @@ public class RequestProcessorServiceImpl implements RequestProcessorService {
         }
     }
 
-    @Scheduled(fixedRate = 30000)
-    public void checkDeadlines() {
+    @Scheduled(fixedRate = 60000, initialDelay = 60000)
+    @Transactional
+    public void checkDeadlines() throws IOException, MessagingException {
         for (Map.Entry<String, LocalDateTime> entry : departmentDeadlines.entrySet()) {
-            if (entry.getValue().isAfter(LocalDateTime.now())) {
+            if (entry.getValue().isBefore(LocalDateTime.now())) {
                 scheduledFetchAndSend.fetchDataAndSendEmail(entry.getKey());
                 deadlinesRepository.setToFalseByName(entry.getKey());
             }

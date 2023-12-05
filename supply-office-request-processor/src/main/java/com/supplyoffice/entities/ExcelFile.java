@@ -3,6 +3,7 @@ package com.supplyoffice.entities;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 @Entity
 @Table(name = "stored_requests")
@@ -17,7 +18,7 @@ public class ExcelFile {
     private String fileName;
 
     @Lob
-    @Column(name = "file-content")
+    @Column(name = "file_content")
     private byte[] fileContent;
 
     @Column(name = "created_at")
@@ -66,5 +67,15 @@ public class ExcelFile {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    @Override
+    public String toString() {
+        return "ExcelFile{" +
+                "id=" + id +
+                ", fileName='" + fileName + '\'' +
+                ", fileContent=" + Arrays.toString(fileContent) +
+                ", createdAt=" + createdAt +
+                '}';
     }
 }
