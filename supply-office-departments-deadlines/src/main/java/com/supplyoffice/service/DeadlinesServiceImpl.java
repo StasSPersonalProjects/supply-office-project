@@ -37,16 +37,23 @@ public class DeadlinesServiceImpl implements DeadlinesService {
             deadline.setDeadline(deadlineDTO.getDeadline());
             deadline.setActive(true);
             deadlinesRepository.save(deadline);
-            notifyProcessor(deadlineDTO);
-            LOG.debug("Notified the requests processor that a deadline for department {} was updated to {}.", deadlineDTO.getDepartmentName(), deadlineDTO.getDeadline());
             updateSupplyRequestRepository(deadlineDTO.getDepartmentName(), deadline.getDeadline());
             LOG.debug("New deadline is now scheduled to {}.", deadline.getDeadline());
+            notifyProcessor(deadlineDTO);
+            LOG.debug("Notified the requests processor that a deadline for department {} was updated to {}.", deadlineDTO.getDepartmentName(), deadlineDTO.getDeadline());
             return String.format
                     ("Next deadline for supply for department %s is set to %s.",
                             deadlineDTO.getDepartmentName(), deadlineDTO.getDeadline().toString());
         } else {
             throw new EntityNotFoundException("Entity " + deadlineDTO.getDepartmentName() + " not found.");
         }
+    }
+
+    @Override
+    @Transactional
+    public String setActiveStatus(String departmentName, int status) {
+        deadlinesRepository.updateStatusByName(departmentName, status);
+        return "Status updated.";
     }
 
     @Transactional

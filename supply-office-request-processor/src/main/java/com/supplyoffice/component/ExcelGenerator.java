@@ -10,6 +10,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayOutputStream;
@@ -25,6 +26,8 @@ public class ExcelGenerator {
 
     @Autowired
     StoredRequestsRepository storedRequestsRepository;
+    @Value("${requests.file.path}")
+    String filePath;
 
     Logger LOG = LoggerFactory.getLogger(ExcelGenerator.class);
 
@@ -62,7 +65,7 @@ public class ExcelGenerator {
 
     private String convertToFile(byte[] data) throws IOException {
         LOG.debug("Converting byte array to a file...");
-        Path path = Paths.get("src/main/resources/supply_request.xlsx");
+        Path path = Paths.get(filePath);
         Files.write(path, data, StandardOpenOption.CREATE);
         String result = path.toFile().getAbsolutePath();
         LOG.debug("File path: {}", result);

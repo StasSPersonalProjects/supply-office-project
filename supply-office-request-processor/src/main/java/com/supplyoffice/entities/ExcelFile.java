@@ -3,7 +3,6 @@ package com.supplyoffice.entities;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 
 @Entity
 @Table(name = "stored_requests")
@@ -74,7 +73,6 @@ public class ExcelFile {
         return "ExcelFile{" +
                 "id=" + id +
                 ", fileName='" + fileName + '\'' +
-                ", fileContent=" + Arrays.toString(fileContent) +
                 ", createdAt=" + createdAt +
                 '}';
     }

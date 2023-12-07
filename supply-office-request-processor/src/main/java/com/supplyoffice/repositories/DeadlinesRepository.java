@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 public interface DeadlinesRepository extends JpaRepository<Deadline, String> {
 
     @Modifying
-    @Query(value = "UPDATE deadlines SET active = 0 WHERE department_name = :name", nativeQuery = true)
+    @Query(value = "UPDATE deadlines SET active = 0, deadline = null WHERE department_name = :name", nativeQuery = true)
     void setToFalseByName(String name);
+
 }

@@ -25,6 +25,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(jakarta.mail.MessagingException.class)
     public void handleJakartaMailMessagingException (jakarta.mail.MessagingException ex) {
-        LOG.debug(ex.getMessage());
+        LOG.debug("jakarta.mail.MessagingException: {}", ex.getMessage());
     }
 }

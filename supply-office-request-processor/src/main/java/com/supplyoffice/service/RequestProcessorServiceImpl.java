@@ -4,7 +4,6 @@ import com.supplyoffice.component.ScheduledFetchAndSend;
 import com.supplyoffice.dto.DeadlineDTO;
 import com.supplyoffice.entities.Deadline;
 import com.supplyoffice.repositories.DeadlinesRepository;
-import com.supplyoffice.repositories.SupplyRequestsRepository;
 import jakarta.annotation.PostConstruct;
 import jakarta.mail.MessagingException;
 import org.slf4j.Logger;
@@ -16,31 +15,23 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class RequestProcessorServiceImpl implements RequestProcessorService {
 
     @Autowired
-    SupplyRequestsRepository supplyRequestsRepository;
+    private DeadlinesRepository deadlinesRepository;
     @Autowired
-    DeadlinesRepository deadlinesRepository;
-    @Autowired
-    ScheduledFetchAndSend scheduledFetchAndSend;
-
-    Map<String, Optional<LocalDateTime>> departmentDeadlinesOptional;
-    Map<String, LocalDateTime> departmentDeadlines;
+    private ScheduledFetchAndSend scheduledFetchAndSend;
+    private Map<String, LocalDateTime> departmentDeadlines;
 
     static Logger LOG = LoggerFactory.getLogger(RequestProcessorServiceImpl.class);
 
-
     @Override
     public void updateDepartmentDeadlines(DeadlineDTO deadlineDTO) {
-        departmentDeadlines.put(deadlineDTO.getDepartmentName(), deadlineDTO.getDeadline());
+        createDepartmentDeadlines();
         LOG.debug("Updated deadlines local data structure. Current values:");
         for (Map.Entry<String, LocalDateTime> entry : departmentDeadlines.entrySet()) {
             LOG.debug("{} : {}", entry.getKey(), entry.getValue());
@@ -50,20 +41,35 @@ public class RequestProcessorServiceImpl implements RequestProcessorService {
     @Scheduled(fixedRate = 60000, initialDelay = 60000)
     @Transactional
     public void checkDeadlines() throws IOException, MessagingException {
-        for (Map.Entry<String, LocalDateTime> entry : departmentDeadlines.entrySet()) {
-            if (entry.getValue().isBefore(LocalDateTime.now())) {
-                scheduledFetchAndSend.fetchDataAndSendEmail(entry.getKey());
-                deadlinesRepository.setToFalseByName(entry.getKey());
+        Set<String> departmentsToRemove = new HashSet<>();
+        LOG.debug("In scheduled task, current deadline values: {}", departmentDeadlines);
+        if (!departmentDeadlines.isEmpty()) {
+            for (Map.Entry<String, LocalDateTime> entry : departmentDeadlines.entrySet()) {
+                if (entry.getValue() != null && entry.getValue().isBefore(LocalDateTime.now())) {
+                    LOG.debug("Found a department who's deadline passed: {}.", entry.getKey());
+                    scheduledFetchAndSend.fetchDataAndSendEmail(entry.getKey());
+                    deadlinesRepository.setToFalseByName(entry.getKey());
+                    departmentsToRemove.add(entry.getKey());
+                }
             }
+            for (String department : departmentsToRemove) {
+                departmentDeadlines.remove(department);
+                LOG.debug("Removed department {} from deadlines data structure.", department);
+            }
+            return;
         }
+        LOG.debug("Deadlines data structure is empty.");
+    }
+    @PostConstruct
+    public void initialCreateDepartmentDeadlines() {
+        departmentDeadlines = new HashMap<>();
+        createDepartmentDeadlines();
     }
 
-    @PostConstruct
     public void createDepartmentDeadlines() {
         try {
-            departmentDeadlines = new HashMap<>();
             List<Deadline> deadlines = deadlinesRepository.findAll();
-            departmentDeadlinesOptional = deadlines.stream()
+            Map<String, Optional<LocalDateTime>> departmentDeadlinesOptional = deadlines.stream()
                     .collect(Collectors.toMap(Deadline::getDepartmentName, d -> Optional.ofNullable(d.getDeadline())));
             for (Map.Entry<String, Optional<LocalDateTime>> entry : departmentDeadlinesOptional.entrySet()) {
                 if (entry.getValue().isPresent()) {
@@ -75,7 +81,7 @@ public class RequestProcessorServiceImpl implements RequestProcessorService {
             }
             LOG.debug("Existing deadlines: {}", departmentDeadlines);
         } catch (Exception e) {
-            LOG.error("Error during @PostConstruct initialization: {}", e.getMessage(), e);
+            LOG.error("Error during departments deadline data structure creation: {}", e.getMessage());
         }
     }
 

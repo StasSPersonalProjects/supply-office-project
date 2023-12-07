@@ -6,10 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 
@@ -32,6 +29,14 @@ public class DeadlinesController {
         } else {
             throw new IllegalArgumentException("The provided date is in the past.");
         }
+    }
+
+    @PutMapping("/status")
+    ResponseEntity<String> setActiveStatus(@RequestParam String name, @RequestParam int status) {
+        LOG.debug("Received new status update to {} for department {}.", status, name);
+        String result = service.setActiveStatus(name, status);
+        LOG.debug("New active status updated successfully!");
+        return ResponseEntity.ok().body(result);
     }
 
     private boolean checkDate(LocalDateTime deadline) {

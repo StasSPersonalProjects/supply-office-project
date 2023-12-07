@@ -21,8 +21,9 @@ public class EmailSender {
     JavaMailSender javaMailSender;
     @Value("${supply.office.address}")
     private String supplyOfficeAddress;
-    @Value("${spring.mail.username}")
+    @Value("${spring.client.sender}")
     private String senderMail;
+
     static Logger LOG = LoggerFactory.getLogger(EmailSender.class);
 
     public void sendEmailWithAttachment(String file)
@@ -31,8 +32,7 @@ public class EmailSender {
             LOG.debug("Received data for mail creation.");
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
-            LOG.debug("Created helper instance");
-            helper.setFrom(supplyOfficeAddress);
+            helper.setFrom(senderMail);
             helper.setTo(supplyOfficeAddress);
             LOG.debug("Recipient address is set to {}.", supplyOfficeAddress);
             helper.setSubject("New supply requests");
