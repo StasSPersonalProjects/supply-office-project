@@ -1,6 +1,5 @@
 package com.supplyoffice.dto;
 
-import com.supplyoffice.entities.Deadline;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
@@ -27,10 +26,6 @@ public class DeadlineDTO {
 
     public static DeadlineDTO of(String newDepartmentDTO) {
         return new DeadlineDTO(newDepartmentDTO, null);
-    }
-
-    public static DeadlineDTO of(Deadline deadline) {
-        return new DeadlineDTO(deadline.getDepartmentName(), deadline.getDeadline());
     }
 
     public String getDepartmentName() {

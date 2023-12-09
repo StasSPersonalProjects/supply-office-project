@@ -1,5 +1,6 @@
 package com.supplyoffice.controller;
 
+import com.supplyoffice.dto.DeadlineDTO;
 import com.supplyoffice.dto.RequestDTO;
 import com.supplyoffice.dto.UpdateRequestDTO;
 import com.supplyoffice.service.RequestReceivingService;
@@ -12,6 +13,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(value = "/request")
 @Validated
@@ -21,6 +24,12 @@ public class RequestReceivingController {
     RequestReceivingService service;
 
     static Logger LOG = LoggerFactory.getLogger(RequestReceivingController.class);
+
+    @GetMapping(value = "/all/{departmentName}")
+    List<UpdateRequestDTO> getAllRequestsByName(@PathVariable String departmentName) {
+        LOG.debug("Received request to fetch all supply requests for department {}.", departmentName);
+        return service.getAllRequestsByName(departmentName);
+    }
 
     @PostMapping
     ResponseEntity<String> addRequest(@RequestBody @Valid RequestDTO requestDTO)
@@ -43,5 +52,11 @@ public class RequestReceivingController {
         LOG.debug("Received delete request for ID {}.", id);
         String response = service.removeRequest(id);
         return ResponseEntity.ok().body(response);
+    }
+
+    @PutMapping("/deadline")
+    void updateDeadline(@RequestBody DeadlineDTO deadlineDTO) {
+        LOG.debug("Received update for deadline to {} for department {}.", deadlineDTO.getDeadline(), deadlineDTO.getDepartmentName());
+        service.updateDeadline(deadlineDTO);
     }
 }

@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 @Component
 public class EmailSender {
@@ -43,6 +45,11 @@ public class EmailSender {
             LOG.debug("File attached.");
             javaMailSender.send(message);
             LOG.debug("Mail sent.");
+            if(Files.deleteIfExists(Path.of(file))) {
+                LOG.debug("supply_requests file deleted after storing it and sending via email.");
+            } else {
+                LOG.debug("Couldn't delete supply_requests file.");
+            }
         } else {
             LOG.debug("No data received.");
         }

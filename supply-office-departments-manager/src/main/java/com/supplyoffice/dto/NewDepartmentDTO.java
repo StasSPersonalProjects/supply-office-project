@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Pattern;
 
 import java.util.Objects;
 
-public class DepartmentRequestDTO {
+public class NewDepartmentDTO {
 
     @NotBlank(message = "Department name cannot be blank.")
     private String name;
@@ -15,17 +15,17 @@ public class DepartmentRequestDTO {
     private String manager;
     private String description;
 
-    public DepartmentRequestDTO(String name, String manager, String description) {
+    public NewDepartmentDTO(String name, String manager, String description) {
         this.name = name;
         this.manager = manager;
         this.description = description;
     }
 
-    public DepartmentRequestDTO() {
+    public NewDepartmentDTO() {
     }
 
-    public static DepartmentRequestDTO of(Department department) {
-        return new DepartmentRequestDTO(department.getName(), department.getManager(), department.getDescription());
+    public static NewDepartmentDTO of(Department department) {
+        return new NewDepartmentDTO(department.getName(), department.getManager(), department.getDescription());
     }
 
     public String getName() {
@@ -56,7 +56,7 @@ public class DepartmentRequestDTO {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        DepartmentRequestDTO that = (DepartmentRequestDTO) o;
+        NewDepartmentDTO that = (NewDepartmentDTO) o;
         return Objects.equals(name, that.name) && Objects.equals(manager, that.manager) && Objects.equals(description, that.description);
     }
 

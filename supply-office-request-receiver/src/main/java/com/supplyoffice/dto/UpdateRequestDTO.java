@@ -1,5 +1,6 @@
 package com.supplyoffice.dto;
 
+import com.supplyoffice.entities.SupplyRequest;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -33,6 +34,13 @@ public class UpdateRequestDTO {
     }
 
     public UpdateRequestDTO() {
+    }
+
+    public static UpdateRequestDTO of(SupplyRequest supplyRequest) {
+        return new UpdateRequestDTO
+                (supplyRequest.getId(), supplyRequest.getDepartmentName(), supplyRequest.getItem(),
+                supplyRequest.getQuantity(), supplyRequest.getMeasureUnit(),
+                supplyRequest.getComments(), supplyRequest.getDeadline());
     }
 
     public long getId() {

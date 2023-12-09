@@ -31,7 +31,7 @@ public class ExcelGenerator {
 
     Logger LOG = LoggerFactory.getLogger(ExcelGenerator.class);
 
-    public String generateExcel(Object[][] data) throws IOException {
+    public String generateExcel(Object[][] data, String departmentName) throws IOException {
         try (Workbook workbook = new XSSFWorkbook()) {
             LOG.debug("Started generating excel file.");
             Sheet sheet = workbook.createSheet("supply_requests");
@@ -45,8 +45,8 @@ public class ExcelGenerator {
             try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
                 workbook.write(outputStream);
                 byte[] result = outputStream.toByteArray();
-                storeFile(result);
-                return convertToFile(result);
+                storeFile(result, departmentName);
+                return convertToFile(result, departmentName);
             }
         }
     }
@@ -63,17 +63,17 @@ public class ExcelGenerator {
         }
     }
 
-    private String convertToFile(byte[] data) throws IOException {
+    private String convertToFile(byte[] data, String departmentName) throws IOException {
         LOG.debug("Converting byte array to a file...");
-        Path path = Paths.get(filePath);
+        Path path = Paths.get(departmentName + ".xlsx");
         Files.write(path, data, StandardOpenOption.CREATE);
         String result = path.toFile().getAbsolutePath();
         LOG.debug("File path: {}", result);
         return result;
     }
 
-    public void storeFile(byte[] file) {
-        ExcelFile createdFile = ExcelFile.of("Supply_request", file, LocalDateTime.now());
+    public void storeFile(byte[] file, String departmentName) {
+        ExcelFile createdFile = ExcelFile.of("Supply_request_" + departmentName, file, LocalDateTime.now());
         ExcelFile storedFile = storedRequestsRepository.save(createdFile);
         LOG.debug("Stored excel {} in DB", storedFile.toString());
     }

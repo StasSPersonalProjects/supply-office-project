@@ -1,5 +1,6 @@
 package com.supplyoffice.entities;
 
+import com.supplyoffice.dto.UpdateRequestDTO;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -24,6 +25,16 @@ public class SupplyRequest {
     @Column(name = "deadline")
     private LocalDateTime deadline;
 
+    public SupplyRequest(long id, String departmentName, String item, int quantity, String measureUnit, String comments, LocalDateTime deadline) {
+        this.id = id;
+        this.departmentName = departmentName;
+        this.item = item;
+        this.quantity = quantity;
+        this.measureUnit = measureUnit;
+        this.comments = comments;
+        this.deadline = deadline;
+    }
+
     public SupplyRequest(String departmentName, String item, int quantity, String measureUnit, String comments) {
         this.departmentName = departmentName;
         this.item = item;
@@ -33,6 +44,13 @@ public class SupplyRequest {
     }
 
     public SupplyRequest() {
+    }
+
+    public static SupplyRequest of(UpdateRequestDTO requestDTO) {
+        return new SupplyRequest
+                (requestDTO.getId(), requestDTO.getDepartmentName(),
+                requestDTO.getItem(), requestDTO.getQuantity(),
+                requestDTO.getMeasureUnit(), requestDTO.getComments(), requestDTO.getDeadline());
     }
 
     public long getId() {

@@ -3,15 +3,20 @@ package com.supplyoffice.service;
 import com.supplyoffice.component.ScheduledFetchAndSend;
 import com.supplyoffice.dto.DeadlineDTO;
 import com.supplyoffice.entities.Deadline;
-import com.supplyoffice.repositories.DeadlinesRepository;
 import jakarta.annotation.PostConstruct;
 import jakarta.mail.MessagingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -22,12 +27,24 @@ import java.util.stream.Collectors;
 public class RequestProcessorServiceImpl implements RequestProcessorService {
 
     @Autowired
-    private DeadlinesRepository deadlinesRepository;
-    @Autowired
     private ScheduledFetchAndSend scheduledFetchAndSend;
+    @Autowired
+    RestTemplate restTemplate;
+    @Autowired
+    WebClient webClient;
+
+    @Value("${deadlines.service.get.url}")
+    private String deadlinesServiceGetUrl;
+
     private Map<String, LocalDateTime> departmentDeadlines;
 
     static Logger LOG = LoggerFactory.getLogger(RequestProcessorServiceImpl.class);
+
+    @PostConstruct
+    public void initialCreateDepartmentDeadlines() {
+        departmentDeadlines = new HashMap<>();
+        createDepartmentDeadlines();
+    }
 
     @Override
     public void updateDepartmentDeadlines(DeadlineDTO deadlineDTO) {
@@ -48,7 +65,7 @@ public class RequestProcessorServiceImpl implements RequestProcessorService {
                 if (entry.getValue() != null && entry.getValue().isBefore(LocalDateTime.now())) {
                     LOG.debug("Found a department who's deadline passed: {}.", entry.getKey());
                     scheduledFetchAndSend.fetchDataAndSendEmail(entry.getKey());
-                    deadlinesRepository.setToFalseByName(entry.getKey());
+                    setToFalseByName(entry.getKey());
                     departmentsToRemove.add(entry.getKey());
                 }
             }
@@ -60,15 +77,10 @@ public class RequestProcessorServiceImpl implements RequestProcessorService {
         }
         LOG.debug("Deadlines data structure is empty.");
     }
-    @PostConstruct
-    public void initialCreateDepartmentDeadlines() {
-        departmentDeadlines = new HashMap<>();
-        createDepartmentDeadlines();
-    }
 
     public void createDepartmentDeadlines() {
         try {
-            List<Deadline> deadlines = deadlinesRepository.findAll();
+            List<Deadline> deadlines = getAllDeadlines();
             Map<String, Optional<LocalDateTime>> departmentDeadlinesOptional = deadlines.stream()
                     .collect(Collectors.toMap(Deadline::getDepartmentName, d -> Optional.ofNullable(d.getDeadline())));
             for (Map.Entry<String, Optional<LocalDateTime>> entry : departmentDeadlinesOptional.entrySet()) {
@@ -83,6 +95,30 @@ public class RequestProcessorServiceImpl implements RequestProcessorService {
         } catch (Exception e) {
             LOG.error("Error during departments deadline data structure creation: {}", e.getMessage());
         }
+    }
+
+    private List<Deadline> getAllDeadlines() {
+        LOG.debug("Fetching data from deadlines service.");
+        ResponseEntity<List<DeadlineDTO>> responseEntity = restTemplate.exchange(
+                deadlinesServiceGetUrl,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<DeadlineDTO>>() {});
+        List<DeadlineDTO> fetchedDeadlines = responseEntity.getBody();
+        return fetchedDeadlines.stream().map(Deadline::of).toList();
+    }
+
+    private void setToFalseByName(String name) {
+        LOG.debug("Notifying deadlines service to set 'active' field to 'FALSE' for department {}.", name);
+        webClient.put()
+                .uri(builder -> builder
+                        .path("/status")
+                        .queryParam("name", name)
+                        .queryParam("status", "0")
+                        .build())
+                .retrieve()
+                .toBodilessEntity()
+                .subscribe(response -> LOG.debug(response.toString()));
     }
 
 }

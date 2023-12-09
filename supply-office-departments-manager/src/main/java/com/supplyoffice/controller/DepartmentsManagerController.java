@@ -1,7 +1,7 @@
 package com.supplyoffice.controller;
 
 import com.supplyoffice.dto.DepartmentDTO;
-import com.supplyoffice.dto.DepartmentRequestDTO;
+import com.supplyoffice.dto.NewDepartmentDTO;
 import com.supplyoffice.service.DepartmentsManagerService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -26,9 +26,9 @@ public class DepartmentsManagerController {
     static Logger LOG = LoggerFactory.getLogger(DepartmentsManagerController.class);
 
     @GetMapping(value = "/deps")
-    ResponseEntity<List<DepartmentRequestDTO>> getAllDepartments() {
+    ResponseEntity<List<NewDepartmentDTO>> getAllDepartments() {
         LOG.debug("Received request for fetching all the registered departments.");
-        List<DepartmentRequestDTO> response = service.getAllDepartments();
+        List<NewDepartmentDTO> response = service.getAllDepartments();
         if (response.isEmpty()) {
             LOG.debug("The result is an empty list. No departments in database.");
         }
@@ -37,8 +37,13 @@ public class DepartmentsManagerController {
                 : ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @GetMapping(value = "/dep")
+    Long getDepartment(@RequestParam String name) {
+        return service.existsByName(name) ? 1L : 0;
+    }
+
     @PostMapping
-    ResponseEntity<String> addNewDepartment(@RequestBody @Valid DepartmentRequestDTO department)
+    ResponseEntity<String> addNewDepartment(@RequestBody @Valid NewDepartmentDTO department)
             throws MethodArgumentNotValidException {
         LOG.debug("Received new department to add, name: {}.", department.getName());
         String response = service.addDepartment(department);
@@ -49,7 +54,7 @@ public class DepartmentsManagerController {
     ResponseEntity<String> updateDepartment(@RequestBody @Valid DepartmentDTO department)
             throws MethodArgumentNotValidException {
         LOG.debug("Received an update request for a department. ID: {}, name: {}", department.getId(), department.getName());
-        DepartmentRequestDTO response = service.updateDepartment(department);
+        NewDepartmentDTO response = service.updateDepartment(department);
         LOG.debug("Update completed successfully!");
         String result = String.format
                 ("The updated department is: name - %s, manager - %s, description - %s",

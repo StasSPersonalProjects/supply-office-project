@@ -1,38 +1,46 @@
-package com.supplyoffice.entities;
+package com.supplyoffice.dto;
 
-import jakarta.persistence.*;
+import com.supplyoffice.entities.SupplyRequest;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "supply_requests")
-public class SupplyRequest {
+public class UpdateRequestDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @NotNull(message = "Department ID must not be null.")
     private long id;
-    @Column(name = "department_name")
+    @NotBlank(message = "Department name field cannot be blank.")
     private String departmentName;
-    @Column(name = "item")
+    @NotBlank(message = "Item field cannot be blank.")
     private String item;
-    @Column(name = "quantity")
+    @Min(value = 1, message = "Quantity must be greater than 0.")
     private int quantity;
-    @Column(name = "measure_unit")
+    @Pattern(regexp = "\\b(kg|gr|units|packs)\\b", flags = Pattern.Flag.CASE_INSENSITIVE, message = "Measure unit must be kg/gr/units/packs.")
     private String measureUnit;
-    @Column(name = "comments")
     private String comments;
-    @Column(name = "deadline")
     private LocalDateTime deadline;
 
-    public SupplyRequest(String departmentName, String item, int quantity, String measureUnit, String comments) {
+    public UpdateRequestDTO(long id, String departmentName, String item, int quantity, String measureUnit, String comments, LocalDateTime deadline) {
+        this.id = id;
         this.departmentName = departmentName;
         this.item = item;
         this.quantity = quantity;
         this.measureUnit = measureUnit;
         this.comments = comments;
+        this.deadline = deadline;
     }
 
-    public SupplyRequest() {
+    public UpdateRequestDTO() {
+    }
+
+    public static UpdateRequestDTO of(SupplyRequest supplyRequest) {
+        return new UpdateRequestDTO
+                (supplyRequest.getId(), supplyRequest.getDepartmentName(), supplyRequest.getItem(),
+                supplyRequest.getQuantity(), supplyRequest.getMeasureUnit(),
+                supplyRequest.getComments(), supplyRequest.getDeadline());
     }
 
     public long getId() {

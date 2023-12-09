@@ -1,7 +1,7 @@
 package com.supplyoffice.entities;
 
 import com.supplyoffice.dto.DepartmentDTO;
-import com.supplyoffice.dto.DepartmentRequestDTO;
+import com.supplyoffice.dto.NewDepartmentDTO;
 import jakarta.persistence.*;
 
 import java.util.Objects;
@@ -36,7 +36,7 @@ public class Department {
     public Department() {
     }
 
-    public static Department of(DepartmentRequestDTO department) {
+    public static Department of(NewDepartmentDTO department) {
         return new Department(department.getName(), department.getManager(), department.getDescription());
     }
 

@@ -1,20 +1,23 @@
 package com.supplyoffice.service;
 
+import com.supplyoffice.dto.DeadlineDTO;
 import com.supplyoffice.dto.RequestDTO;
 import com.supplyoffice.dto.UpdateRequestDTO;
 import com.supplyoffice.entities.SupplyRequest;
-import com.supplyoffice.repositories.DeadlinesRepository;
-import com.supplyoffice.repositories.DepartmentsRepository;
 import com.supplyoffice.repositories.SupplyRequestsRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class RequestReceivingServiceImpl implements RequestReceivingService {
@@ -22,9 +25,11 @@ public class RequestReceivingServiceImpl implements RequestReceivingService {
     @Autowired
     private SupplyRequestsRepository supplyRequestsRepository;
     @Autowired
-    private DepartmentsRepository departmentsRepository;
-    @Autowired
-    private DeadlinesRepository deadlinesRepository;
+    RestTemplate restTemplate;
+    @Value("${deadlines.service.url}")
+    private String deadlinesServiceUrl;
+    @Value("${departments.service.url}")
+    private String departmentsServiceUrl;
 
     static Logger LOG = LoggerFactory.getLogger(RequestReceivingServiceImpl.class);
 
@@ -35,6 +40,11 @@ public class RequestReceivingServiceImpl implements RequestReceivingService {
         if (departmentExists(requestDTO.getDepartmentName())) {
             LOG.debug("Department found: {}.", requestDTO.getDepartmentName());
             LocalDateTime deadline = getDeadline(requestDTO.getDepartmentName());
+            if (deadline == null) {
+                String result = String.format("No deadline is scheduled for the given department %s.", requestDTO.getDepartmentName());
+                LOG.debug(result);
+                return result;
+            }
             SupplyRequest newRequest = SupplyRequest.of(requestDTO);
             newRequest.setDeadline(deadline);
             SupplyRequest savedRequest = supplyRequestsRepository.save(newRequest);
@@ -78,11 +88,28 @@ public class RequestReceivingServiceImpl implements RequestReceivingService {
         }
     }
 
-    private LocalDateTime getDeadline(String departmentName) {
-        return deadlinesRepository.findDeadlineByName(departmentName);
+    @Override
+    @Transactional
+    public void updateDeadline(DeadlineDTO deadlineDTO) {
+        LOG.debug("Deadline update is processed inside RequestReceivingService class.");
+        supplyRequestsRepository.updateDeadlineByName(deadlineDTO.getDepartmentName(), deadlineDTO.getDeadline());
+        LOG.debug("Deadline for department {} updated successfully.", deadlineDTO.getDepartmentName());
     }
 
-    private boolean departmentExists(String departmentName) {
-        return departmentsRepository.existsByName(departmentName) > 0;
+    @Override
+    public List<UpdateRequestDTO> getAllRequestsByName(String departmentName) {
+        LOG.debug("Fetching supply requests for department {}.", departmentName);
+        List<SupplyRequest> fetchedRequests = supplyRequestsRepository.findAllByName(departmentName);
+        return fetchedRequests.stream().map(UpdateRequestDTO::of).collect(Collectors.toList());
+    }
+
+    private LocalDateTime getDeadline(String departmentName) {
+        LOG.debug("Checking deadlines service to retrieve data.");
+        return restTemplate.getForObject(deadlinesServiceUrl + departmentName, LocalDateTime.class);
+    }
+
+    private boolean departmentExists(String departmentName) throws NullPointerException {
+        LOG.debug("Checking departments service to retrieve data.");
+        return restTemplate.getForObject(departmentsServiceUrl + departmentName, Long.class) > 0;
     }
 }
