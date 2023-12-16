@@ -32,7 +32,7 @@ public class DepartmentsManagerServiceImpl implements DepartmentsManagerService 
     @Override
     public List<NewDepartmentDTO> getAllDepartments() {
         LOG.debug("The request for fetching all departments is processed inside the service class.");
-        return convertToDepReqDTOList(departmentsRepository.findAll());
+        return departmentsRepository.findAll().stream().map(NewDepartmentDTO::of).toList();
     }
 
     @Override
@@ -110,9 +110,5 @@ public class DepartmentsManagerServiceImpl implements DepartmentsManagerService 
             throw new EntityNotFoundException("Entity with ID " + id + " not found.");
         }
         return result;
-    }
-
-    private List<NewDepartmentDTO> convertToDepReqDTOList(List<Department> listOfDepartments) {
-        return listOfDepartments.stream().map(NewDepartmentDTO::of).toList();
     }
 }

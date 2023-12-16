@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,7 +30,8 @@ public class User implements UserDetails {
     @Column(name = "password")
     private String password;
     @Column(name = "role")
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private Role role;
     @Column(name = "account_non_expired")
     private boolean accountNonExpired;
     @Column(name = "account_non_locked")
@@ -38,10 +40,12 @@ public class User implements UserDetails {
     private boolean credentialsNonExpired;
     @Column(name = "enabled")
     private boolean enabled;
+    @OneToMany(mappedBy = "user")
+    private List<Token> tokens;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority(role));
+        return Collections.singletonList(new SimpleGrantedAuthority(role.name()));
     }
 
     @Override
