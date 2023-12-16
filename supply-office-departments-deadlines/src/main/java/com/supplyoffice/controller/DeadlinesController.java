@@ -3,11 +3,13 @@ package com.supplyoffice.controller;
 import com.supplyoffice.dto.DeadlineDTO;
 import com.supplyoffice.entities.Deadline;
 import com.supplyoffice.service.DeadlinesService;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -15,6 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/deadline")
+@Validated
 public class DeadlinesController {
 
     @Autowired
@@ -23,7 +26,7 @@ public class DeadlinesController {
     Logger LOG = LoggerFactory.getLogger(DeadlinesController.class);
 
     @PostMapping(value = "/department")
-    void addDepartment(@RequestBody DeadlineDTO deadlineDTO) {
+    void addDepartment(@Valid @RequestBody DeadlineDTO deadlineDTO) {
         if (deadlineDTO != null) {
             LOG.debug("Received a department {} to add to deadlines table in DB.", deadlineDTO.getDepartmentName());
             service.addDepartment(deadlineDTO);
@@ -33,7 +36,7 @@ public class DeadlinesController {
     }
 
     @PutMapping(value = "/new")
-    ResponseEntity<String> setDeadline(@RequestBody DeadlineDTO deadlineDTO) {
+    ResponseEntity<String> setDeadline(@Valid @RequestBody DeadlineDTO deadlineDTO) {
         if(checkDate(deadlineDTO.getDeadline())) {
             LOG.debug("Received new update request for department {}.", deadlineDTO.getDepartmentName());
             String result = service.setDeadline(deadlineDTO);

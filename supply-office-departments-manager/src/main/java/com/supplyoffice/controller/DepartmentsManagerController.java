@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/supply")
+@RequestMapping(value = "/departments")
 @Validated
 public class DepartmentsManagerController {
 
@@ -25,7 +25,7 @@ public class DepartmentsManagerController {
 
     static Logger LOG = LoggerFactory.getLogger(DepartmentsManagerController.class);
 
-    @GetMapping(value = "/deps")
+    @GetMapping(value = "/all")
     ResponseEntity<List<NewDepartmentDTO>> getAllDepartments() {
         LOG.debug("Received request for fetching all the registered departments.");
         List<NewDepartmentDTO> response = service.getAllDepartments();
@@ -37,7 +37,7 @@ public class DepartmentsManagerController {
                 : ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @GetMapping(value = "/dep")
+    @GetMapping(value = "/single")
     Long getDepartment(@RequestParam String name) {
         return service.existsByName(name) ? 1L : 0;
     }
@@ -62,7 +62,7 @@ public class DepartmentsManagerController {
         return ResponseEntity.ok().body(result);
     }
 
-    @DeleteMapping(value = "/deps/{id}")
+    @DeleteMapping(value = "/{id}")
     ResponseEntity<String> removeDepartment(@PathVariable int id) {
         LOG.debug("Received a delete request for a department. ID: {}.", id);
         String response = service.removeDepartment(id);

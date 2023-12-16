@@ -4,7 +4,7 @@ import com.supplyoffice.dto.DeadlineDTO;
 import com.supplyoffice.dto.RequestDTO;
 import com.supplyoffice.dto.UpdateRequestDTO;
 import com.supplyoffice.entities.SupplyRequest;
-import com.supplyoffice.repositories.SupplyRequestsRepository;
+import com.supplyoffice.repository.SupplyRequestsRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

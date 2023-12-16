@@ -1,7 +1,7 @@
 package com.supplyoffice.component;
 
 import com.supplyoffice.entities.ExcelFile;
-import com.supplyoffice.repositories.StoredRequestsRepository;
+import com.supplyoffice.repository.StoredRequestsRepository;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;

@@ -4,7 +4,7 @@ import com.supplyoffice.dto.DeadlineDTO;
 import com.supplyoffice.dto.DepartmentDTO;
 import com.supplyoffice.dto.NewDepartmentDTO;
 import com.supplyoffice.entities.Department;
-import com.supplyoffice.repositories.DepartmentsRepository;
+import com.supplyoffice.repository.DepartmentsRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

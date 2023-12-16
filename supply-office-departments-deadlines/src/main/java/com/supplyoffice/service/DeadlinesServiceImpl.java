@@ -2,7 +2,7 @@ package com.supplyoffice.service;
 
 import com.supplyoffice.dto.DeadlineDTO;
 import com.supplyoffice.entities.Deadline;
-import com.supplyoffice.repositories.DeadlinesRepository;
+import com.supplyoffice.repository.DeadlinesRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

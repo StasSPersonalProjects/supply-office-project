@@ -1,4 +1,4 @@
-package com.supplyoffice.repositories;
+package com.supplyoffice.repository;
 
 import com.supplyoffice.entities.Deadline;
 import org.springframework.data.jpa.repository.JpaRepository;
