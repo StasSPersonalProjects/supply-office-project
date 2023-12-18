@@ -45,8 +45,3 @@ public class SecurityConfiguration {
     }
 }
 
-//request -> {
-//        request
-//        .requestMatchers("/auth/register", "/auth/authenticate").permitAll()
-//        .requestMatchers("/auth/hello", "/auth/refresh").authenticated();
-//        }
