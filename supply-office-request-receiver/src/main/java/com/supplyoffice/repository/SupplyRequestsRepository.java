@@ -17,4 +17,8 @@ public interface SupplyRequestsRepository extends JpaRepository<SupplyRequest, S
 
     @Query(value = "SELECT * FROM supply_requests s WHERE s.department_name = :name", nativeQuery = true)
     List<SupplyRequest> findAllByName(String name);
+
+    @Modifying
+    @Query(value = "DELETE FROM supply_requests s WHERE s.department_name = :name", nativeQuery = true)
+    void removeAllByName(@Param("name") String name);
 }

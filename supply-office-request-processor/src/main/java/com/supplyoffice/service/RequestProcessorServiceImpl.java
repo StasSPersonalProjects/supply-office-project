@@ -3,7 +3,6 @@ package com.supplyoffice.service;
 import com.supplyoffice.component.ScheduledFetchAndSend;
 import com.supplyoffice.dto.DeadlineDTO;
 import com.supplyoffice.entities.Deadline;
-import jakarta.annotation.PostConstruct;
 import jakarta.mail.MessagingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +30,9 @@ public class RequestProcessorServiceImpl implements RequestProcessorService {
     @Autowired
     RestTemplate restTemplate;
     @Autowired
-    WebClient webClient;
+    WebClient webClientDeadlines;
+    @Autowired
+    WebClient webClientReceiver;
 
     @Value("${deadlines.service.get.url}")
     private String deadlinesServiceGetUrl;
@@ -40,7 +41,7 @@ public class RequestProcessorServiceImpl implements RequestProcessorService {
 
     static Logger LOG = LoggerFactory.getLogger(RequestProcessorServiceImpl.class);
 
-    @PostConstruct
+    @Scheduled(initialDelay = 30000)
     public void initialCreateDepartmentDeadlines() {
         departmentDeadlines = new HashMap<>();
         createDepartmentDeadlines();
@@ -65,6 +66,7 @@ public class RequestProcessorServiceImpl implements RequestProcessorService {
                 if (entry.getValue() != null && entry.getValue().isBefore(LocalDateTime.now())) {
                     LOG.debug("Found a department who's deadline passed: {}.", entry.getKey());
                     scheduledFetchAndSend.fetchDataAndSendEmail(entry.getKey());
+                    removeRequestsByDepartmentName(entry.getKey());
                     setToFalseByName(entry.getKey());
                     departmentsToRemove.add(entry.getKey());
                 }
@@ -110,7 +112,7 @@ public class RequestProcessorServiceImpl implements RequestProcessorService {
 
     private void setToFalseByName(String name) {
         LOG.debug("Notifying deadlines service to set 'active' field to 'FALSE' for department {}.", name);
-        webClient.put()
+        webClientDeadlines.put()
                 .uri(builder -> builder
                         .path("/status")
                         .queryParam("name", name)
@@ -121,4 +123,14 @@ public class RequestProcessorServiceImpl implements RequestProcessorService {
                 .subscribe(response -> LOG.debug(response.toString()));
     }
 
+    public void removeRequestsByDepartmentName(String name) {
+        LOG.debug("Sending 'remove all requests' command to receiver service for department {}.", name);
+        webClientReceiver.delete()
+                .uri(builder -> builder
+                        .path("/remove/" + name)
+                        .build())
+                .retrieve()
+                .toBodilessEntity()
+                .subscribe();
+    }
 }

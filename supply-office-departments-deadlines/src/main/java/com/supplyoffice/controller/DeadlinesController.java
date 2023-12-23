@@ -36,7 +36,7 @@ public class DeadlinesController {
     }
 
     @PutMapping(value = "/new")
-    ResponseEntity<String> setDeadline(@Valid @RequestBody DeadlineDTO deadlineDTO) {
+    ResponseEntity<String> setDeadline(@RequestBody DeadlineDTO deadlineDTO) {
         if(checkDate(deadlineDTO.getDeadline())) {
             LOG.debug("Received new update request for department {}.", deadlineDTO.getDepartmentName());
             String result = service.setDeadline(deadlineDTO);

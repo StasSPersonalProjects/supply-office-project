@@ -2,7 +2,6 @@ package com.supplyoffice.dto;
 
 import com.supplyoffice.entities.Deadline;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 
 import java.time.LocalDateTime;
 
@@ -10,7 +9,6 @@ public class DeadlineDTO {
 
     @NotBlank(message = "Department name cannot be blank.")
     private String departmentName;
-    @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}$\n", message = "Date and time wrong format.")
     private LocalDateTime deadline;
 
     public DeadlineDTO(String departmentName, LocalDateTime deadline) {

@@ -74,7 +74,7 @@ public class DeadlinesServiceImpl implements DeadlinesService {
 
     @Override
     public List<Deadline> getAllDeadlines() {
-        return deadlinesRepository.findAll();
+        return deadlinesRepository.findAllWhereActiveTrue();
     }
 
     private void notifySupplyRequestReceiver(String departmentName, LocalDateTime deadline)

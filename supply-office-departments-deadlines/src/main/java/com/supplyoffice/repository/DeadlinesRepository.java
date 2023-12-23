@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public interface DeadlinesRepository extends JpaRepository<Deadline, String> {
 
@@ -19,4 +20,7 @@ public interface DeadlinesRepository extends JpaRepository<Deadline, String> {
     @Query(value = "UPDATE deadlines SET active = :status WHERE department_name = :name", nativeQuery = true)
     @Modifying
     void updateStatusByName(@Param("name") String name, @Param("status") int status);
+
+    @Query(value = "SELECT * FROM deadlines d WHERE d.active = 1", nativeQuery = true)
+    List<Deadline> findAllWhereActiveTrue();
 }

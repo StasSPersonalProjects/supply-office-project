@@ -3,10 +3,14 @@ package com.supplyoffice.controller;
 import com.supplyoffice.dto.AuthenticationRequest;
 import com.supplyoffice.dto.AuthenticationResponse;
 import com.supplyoffice.dto.RegisterRequest;
+import com.supplyoffice.entities.Role;
 import com.supplyoffice.service.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,15 +23,27 @@ public class AuthController {
 
     private final AuthenticationService authenticationService;
 
-    @GetMapping("/hello")
-    public ResponseEntity<String> sayHello() {
-        return ResponseEntity.ok("Hello!");
+    static Logger LOG = LoggerFactory.getLogger(AuthController.class);
+
+    @GetMapping("/validate")
+    public ResponseEntity<Boolean> validateToken(@RequestParam(value = "token") String token) {
+        boolean response = authenticationService.validate(token);
+        if (response) {
+            return ResponseEntity.ok().body(true);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
+        }
     }
 
-    @GetMapping("/valid")
-    public ResponseEntity<Boolean> validate(@RequestHeader String token) {
-        // TODO - validate token from API gateway
-        return null;
+    @GetMapping("/role")
+    public ResponseEntity<String> getUserRole(@RequestParam(value = "token") String token) {
+        String response = authenticationService.getRole(token);
+        try {
+            Role role = Role.valueOf(response);
+            return ResponseEntity.ok().body(role.name());
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
     }
 
     @PostMapping("/register")

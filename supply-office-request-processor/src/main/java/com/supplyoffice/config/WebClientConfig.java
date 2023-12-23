@@ -13,7 +13,12 @@ public class WebClientConfig {
     private WebClient.Builder webClientBuilder;
 
     @Bean
-    public WebClient webClientDeadlines(@Value("${deadlines.service.url}") String processorServiceUrl) {
-        return WebClient.builder().baseUrl(processorServiceUrl).build();
+    public WebClient webClientDeadlines(@Value("${deadlines.service.url}") String deadlinesServiceUrl) {
+        return WebClient.builder().baseUrl(deadlinesServiceUrl).build();
+    }
+
+    @Bean
+    public WebClient webClientReceiver(@Value("${receiver.service.url}") String receiverServiceUrl) {
+        return WebClient.builder().baseUrl(receiverServiceUrl).build();
     }
 }

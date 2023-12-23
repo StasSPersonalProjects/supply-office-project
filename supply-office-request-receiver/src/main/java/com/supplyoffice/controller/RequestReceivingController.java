@@ -59,4 +59,10 @@ public class RequestReceivingController {
         LOG.debug("Received update for deadline to {} for department {}.", deadlineDTO.getDeadline(), deadlineDTO.getDepartmentName());
         service.updateDeadline(deadlineDTO);
     }
+
+    @DeleteMapping(value = "/remove/{departmentName}")
+    void removeRequestsByDepartment(@PathVariable String departmentName) {
+        LOG.debug("Received delete request for all supply requests for department {}.", departmentName);
+        service.removeAllByName(departmentName);
+    }
 }

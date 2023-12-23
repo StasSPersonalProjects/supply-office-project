@@ -13,4 +13,5 @@ public interface RequestReceivingService {
     String removeRequest(long id);
     void updateDeadline(DeadlineDTO deadlineDTO);
     List<UpdateRequestDTO> getAllRequestsByName(String departmentName);
+    void removeAllByName(String departmentName);
 }

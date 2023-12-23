@@ -54,7 +54,6 @@ public class DepartmentsManagerServiceImpl implements DepartmentsManagerService 
         notifyDeadlinesService(DeadlineDTO.of(departmentDTO.getName()));
         result = String.format("Created new department %s with ID %d.", savedDepartment.getName(), savedDepartment.getId());
         LOG.debug(result);
-        LOG.debug("Created new department in 'deadlines' DB.");
         return result;
     }
 

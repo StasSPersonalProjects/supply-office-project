@@ -103,6 +103,13 @@ public class RequestReceivingServiceImpl implements RequestReceivingService {
         return fetchedRequests.stream().map(UpdateRequestDTO::of).collect(Collectors.toList());
     }
 
+    @Override
+    @Transactional
+    public void removeAllByName(String departmentName) {
+        LOG.debug("Removing supply requests for department {}.", departmentName);
+        supplyRequestsRepository.removeAllByName(departmentName);
+    }
+
     private LocalDateTime getDeadline(String departmentName) {
         LOG.debug("Checking deadlines service to retrieve data.");
         return restTemplate.getForObject(deadlinesServiceUrl + departmentName, LocalDateTime.class);

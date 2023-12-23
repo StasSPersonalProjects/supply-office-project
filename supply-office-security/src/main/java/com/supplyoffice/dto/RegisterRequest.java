@@ -1,5 +1,6 @@
 package com.supplyoffice.dto;
 
+import com.supplyoffice.entities.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,4 +16,5 @@ public class RegisterRequest {
     private String lastName;
     private String username;
     private String password;
+    private Role role;
 }

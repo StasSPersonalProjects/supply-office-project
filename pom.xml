@@ -20,8 +20,8 @@
         <module>supply-office-request-receiver</module>
         <module>supply-office-request-processor</module>
         <module>supply-office-security</module>
-        <module>supply-office-gateway</module>
-    </modules>
+		<module>supply-office-gateway</module>
+	</modules>
     <properties>
 		<java.version>17</java.version>
 		<spring-cloud.version>2023.0.0-RC1</spring-cloud.version>
