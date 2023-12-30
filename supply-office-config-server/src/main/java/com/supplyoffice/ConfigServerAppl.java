@@ -2,13 +2,13 @@ package com.supplyoffice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.cloud.config.server.EnableConfigServer;
 
+@EnableConfigServer
 @SpringBootApplication
-@ComponentScan(basePackages = "com.supplyoffice")
-public class ApiGatewayAppl {
+public class ConfigServerAppl {
 
     public static void main(String[] args) {
-        SpringApplication.run(ApiGatewayAppl.class, args);
+        SpringApplication.run(ConfigServerAppl.class, args);
     }
 }
