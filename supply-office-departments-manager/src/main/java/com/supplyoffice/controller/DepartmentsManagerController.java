@@ -38,8 +38,8 @@ public class DepartmentsManagerController {
     }
 
     @GetMapping(value = "/single")
-    Long getDepartment(@RequestParam String name) {
-        return service.existsByName(name) ? 1L : 0;
+    Boolean getDepartment(@RequestParam String name) {
+        return service.existsByName(name);
     }
 
     @PostMapping

@@ -8,12 +8,13 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.security.Key;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class JwtService {
@@ -29,13 +30,20 @@ public class JwtService {
         return extractClaim(token, Claims::getSubject);
     }
 
+    public String extractRole(String token) {
+        final Claims claims = extractAllClaims(token);
+        return claims.get("authority", String.class);
+    }
+
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
     public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+        Map<String, Object> roleClaims = userDetails.getAuthorities().stream()
+                .collect(Collectors.toMap(authority -> "authority", GrantedAuthority::getAuthority));
+        return generateToken(roleClaims, userDetails);
     }
 
     public String generateToken(
@@ -48,7 +56,9 @@ public class JwtService {
     public String generateRefreshToken(
             UserDetails userDetails
     ) {
-        return buildToken(new HashMap<>(), userDetails, refreshExpiration);
+        Map<String, Object> roleClaims = userDetails.getAuthorities().stream()
+                .collect(Collectors.toMap(authority -> "authority", GrantedAuthority::getAuthority));
+        return buildToken(roleClaims, userDetails, refreshExpiration);
     }
 
     private String buildToken(

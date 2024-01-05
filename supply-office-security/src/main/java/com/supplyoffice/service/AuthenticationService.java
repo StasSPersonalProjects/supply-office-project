@@ -48,10 +48,9 @@ public class AuthenticationService {
 
     public String getRole(String token) {
         LOG.debug("Retrieving role by using token.");
-        String username = jwtService.extractUsername(token);
-        User userDetails = (User) this.userDetailsService.loadUserByUsername(username);
-        LOG.debug("Retrieved role for user {} : {}", username, userDetails.getAuthorities().toString());
-        return userDetails.getRole().toString();
+        String role = jwtService.extractRole(token);
+        LOG.debug("Retrieved role: {}", role);
+        return role;
     }
 
     public AuthenticationResponse register(RegisterRequest request) {

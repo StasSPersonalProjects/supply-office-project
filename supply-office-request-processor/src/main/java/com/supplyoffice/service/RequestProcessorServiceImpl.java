@@ -1,6 +1,6 @@
 package com.supplyoffice.service;
 
-import com.supplyoffice.component.ScheduledFetchAndSend;
+import com.supplyoffice.components.ScheduledFetchAndSend;
 import com.supplyoffice.dto.DeadlineDTO;
 import com.supplyoffice.entities.Deadline;
 import jakarta.mail.MessagingException;

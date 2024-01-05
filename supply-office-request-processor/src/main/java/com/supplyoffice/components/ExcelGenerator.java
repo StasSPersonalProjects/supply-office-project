@@ -1,4 +1,4 @@
-package com.supplyoffice.component;
+package com.supplyoffice.components;
 
 import com.supplyoffice.entities.ExcelFile;
 import com.supplyoffice.repository.StoredRequestsRepository;

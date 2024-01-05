@@ -30,7 +30,7 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> {
                     request.requestMatchers
-                            ("/auth/validate", "/auth/role", "/auth/register", "/auth/authenticate", "/auth/refresh").permitAll();
+                            ("/auth/validate/**", "/auth/role", "/auth/register", "/auth/authenticate", "/auth/refresh").permitAll();
                 })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)

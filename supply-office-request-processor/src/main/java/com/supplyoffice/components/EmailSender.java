@@ -1,4 +1,4 @@
-package com.supplyoffice.component;
+package com.supplyoffice.components;
 
 import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;

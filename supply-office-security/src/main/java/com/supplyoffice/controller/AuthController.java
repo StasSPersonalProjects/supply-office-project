@@ -25,12 +25,14 @@ public class AuthController {
 
     static Logger LOG = LoggerFactory.getLogger(AuthController.class);
 
-    @GetMapping("/validate")
-    public ResponseEntity<Boolean> validateToken(@RequestParam(value = "token") String token) {
+    @GetMapping("/validate/{token}")
+    public ResponseEntity<Boolean> validateToken(@PathVariable String token) {
         boolean response = authenticationService.validate(token);
         if (response) {
+            LOG.debug("Validated!");
             return ResponseEntity.ok().body(true);
         } else {
+            LOG.debug("Not Validated!");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
         }
     }

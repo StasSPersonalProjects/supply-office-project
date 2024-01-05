@@ -1,4 +1,4 @@
-package com.supplyoffice.component;
+package com.supplyoffice.components;
 
 import com.supplyoffice.dto.UpdateRequestDTO;
 import com.supplyoffice.entities.SupplyRequest;
